@@ -1,6 +1,7 @@
 # Actuators convert generated text into actions for the LLM to control
 from __future__ import annotations
 from abc import ABC
+import gradio as gr
 
 
 class Actuator(ABC):
@@ -15,6 +16,27 @@ class Actuator(ABC):
         """
         raise NotImplementedError()
     
+    def create_widget(self) -> Any:
+        """
+        Creates a widget (currently restricted to gradio components) for this actuator 
+        This will actually be called during the agent loop.
+        """
+        raise NotImplementedError()
+
+
+class TextActuator(Actuator):
+    """
+    The simplest actuator: a texbox with output
+    """    
+    def __init__(self, name: str):
+        super().__init__(name)
+    
+    def act(self, text) -> str:
+        return text
+    
+    def create_widget(self) -> Any:
+        return gr.TextBox(label=self.name) 
+
     
 class PictureWindow(Actuator):
     def __init__(
@@ -35,4 +57,7 @@ class PictureWindow(Actuator):
         The cue given bye the LLM might not be perfect so we compute the minimum distance in some sense
         to our limited set of cues
         """
+        pass
+
+    def create_widget(self) -> Any:
         pass
